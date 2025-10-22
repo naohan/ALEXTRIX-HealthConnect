@@ -69,34 +69,39 @@ git push -u origin main
 2. Regístrate con GitHub (recomendado)
 3. Autoriza acceso a tus repositorios
 
-### 3.2 Crear Base de Datos MySQL
+### 3.2 Crear Base de Datos PostgreSQL
 
-**Opción A: Render MySQL (Recomendado)**
+**Opción A: Render PostgreSQL (Recomendado - GRATIS)**
 
 1. En Render Dashboard → Click "New +"
-2. Selecciona "MySQL"
+2. Selecciona "PostgreSQL"
 3. Configuración:
    - **Name:** `alextrix-db`
    - **Database:** `alextrix_db`
    - **User:** (se genera automático)
    - **Region:** Oregon (Free tier)
+   - **PostgreSQL Version:** 16 (o la más reciente)
 4. Click "Create Database"
 5. **Guarda las credenciales:**
-   - Internal Database URL
+   - **Internal Database URL** (usa esta para mejor rendimiento)
+   - External Database URL
    - Host
    - Username
    - Password
+   - Port: 5432
+
+⚠️ **IMPORTANTE:** Usa la **Internal Database URL** cuando conectes el Web Service
 
 **Opción B: Railway (Alternativa gratuita)**
 
 1. Ve a https://railway.app
-2. New Project → Provision MySQL
+2. New Project → Provision PostgreSQL
 3. Copia las credenciales
 
-**Opción C: PlanetScale (MySQL serverless)**
+**Opción C: Neon (PostgreSQL serverless)**
 
-1. Ve a https://planetscale.com
-2. Create database → Free tier
+1. Ve a https://neon.tech
+2. Create database → Free tier (3GB storage)
 3. Obtén connection string
 
 ### 3.3 Crear Web Service
@@ -121,14 +126,30 @@ Instance Type: Free
 
 En el panel de Render, ve a "Environment" y agrega:
 
+**Opción 1: Usar DATABASE_URL (Recomendado)**
+
 ```
-DB_USER=tu_usuario_render_mysql
-DB_PASS=tu_password_render_mysql
-DB_NAME=alextrix_db
-DB_HOST=tu_host_render_mysql (ej: dpg-xxxxx-a.oregon-postgres.render.com)
+DATABASE_URL=postgresql://user:password@host:5432/alextrix_db
 ```
 
-⚠️ **Usa las credenciales de la base de datos que creaste en 3.2**
+⚠️ **Copia el "Internal Database URL" de tu base de datos PostgreSQL de Render**
+
+Ejemplo:
+```
+DATABASE_URL=postgresql://alextrix_user:xyzABC123@dpg-xxxxx-a/alextrix_db
+```
+
+**Opción 2: Variables individuales** (si prefieres)
+
+```
+DB_USER=tu_usuario
+DB_PASS=tu_password
+DB_NAME=alextrix_db
+DB_HOST=dpg-xxxxx-a.oregon-postgres.render.com
+DB_PORT=5432
+```
+
+💡 **Tip:** La opción 1 es más simple y Render la configura automáticamente
 
 ### 3.5 Deployar
 
@@ -205,12 +226,13 @@ git push origin main
 ### Error: "Application failed to respond"
 - Verifica las variables de entorno en Render
 - Revisa los logs: Render Dashboard → Logs
-- Asegúrate de que MySQL esté activo
+- Asegúrate de que PostgreSQL esté activo
 
-### Error: "Can't connect to MySQL"
-- Verifica las credenciales de la base de datos
+### Error: "Can't connect to database"
+- Verifica que DATABASE_URL esté correctamente configurada
 - Usa el "Internal Database URL" de Render (más rápido)
-- Verifica que el puerto sea el correcto
+- Asegúrate de que la URL comience con `postgresql://` no `postgres://`
+- Verifica que el puerto sea 5432
 
 ### WebSocket no conecta
 - Usa `wss://` en lugar de `ws://` en producción
@@ -227,15 +249,20 @@ git push origin main
 
 ### 1. Usar Base de Datos en la nube
 
-**PlanetScale (Recomendado):**
-- 10GB gratis
-- MySQL serverless
+**Render PostgreSQL (Ya incluido - GRATIS):**
+- 1GB gratis
 - Sin sleep mode
-- https://planetscale.com
+- Incluido en el plan gratuito
+
+**Neon (Alternativa PostgreSQL Serverless):**
+- 3GB gratis
+- PostgreSQL serverless
+- Escalado automático
+- https://neon.tech
 
 **Railway:**
 - $5 gratis al mes
-- MySQL + PostgreSQL
+- PostgreSQL + MySQL
 - https://railway.app
 
 ### 2. Agregar dominio personalizado

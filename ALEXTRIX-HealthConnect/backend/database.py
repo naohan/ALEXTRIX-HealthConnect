@@ -8,12 +8,22 @@ import os
 load_dotenv()
 
 # Configuración de la base de datos desde variables de entorno
-DB_USER = os.getenv("DB_USER", "root")
-DB_PASS = os.getenv("DB_PASS", "")
-DB_NAME = os.getenv("DB_NAME", "alextrix_db")
-DB_HOST = os.getenv("DB_HOST", "localhost")
+# Prioridad 1: DATABASE_URL completa (para Render/producción)
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}/{DB_NAME}"
+if not DATABASE_URL:
+    # Prioridad 2: Construir desde variables individuales (desarrollo local)
+    DB_USER = os.getenv("DB_USER", "postgres")
+    DB_PASS = os.getenv("DB_PASS", "")
+    DB_NAME = os.getenv("DB_NAME", "alextrix_db")
+    DB_HOST = os.getenv("DB_HOST", "localhost")
+    DB_PORT = os.getenv("DB_PORT", "5432")
+    
+    DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+else:
+    # Render usa "postgres://" pero SQLAlchemy 2.0 requiere "postgresql://"
+    if DATABASE_URL.startswith("postgres://"):
+        DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
 # Configuración de SQLAlchemy con configuración lazy
 engine = create_engine(
@@ -36,7 +46,7 @@ def create_tables():
         print("✅ Tablas de base de datos creadas/verificadas correctamente")
     except OperationalError as e:
         print(f"⚠️ Error conectando a la base de datos: {e}")
-        print("💡 Asegúrate de que MySQL esté ejecutándose (XAMPP/MySQL)")
+        print("💡 Asegúrate de que PostgreSQL esté ejecutándose o que DATABASE_URL sea correcta")
         return False
     return True
 

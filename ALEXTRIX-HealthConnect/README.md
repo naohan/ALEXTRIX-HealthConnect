@@ -6,7 +6,7 @@ API REST y WebSocket en tiempo real para monitoreo de datos fisiológicos enviad
 
 - **API REST con FastAPI**: Endpoints para recibir y consultar datos de sensores
 - **WebSocket en Tiempo Real**: Transmisión instantánea de datos al dashboard
-- **Base de Datos MySQL**: Almacenamiento persistente con SQLAlchemy
+- **Base de Datos PostgreSQL**: Almacenamiento persistente con SQLAlchemy
 - **Sistema de Alertas**: Análisis automático de valores críticos
 - **CORS Habilitado**: Permite conexión desde el dashboard web
 - **Reconexión Automática**: Manejo robusto de conexiones de BD
@@ -59,15 +59,21 @@ pip install -r requirements.txt
 Crear archivo `.env` en la raíz del proyecto:
 
 ```env
-DB_USER=root
-DB_PASS=
+DB_USER=postgres
+DB_PASS=tu_password
 DB_NAME=alextrix_db
 DB_HOST=localhost
+DB_PORT=5432
 ```
 
-### 3. Iniciar MySQL
+### 3. Iniciar PostgreSQL
 
-Asegúrate de tener MySQL ejecutándose (XAMPP, WAMP, o instalación local).
+Asegúrate de tener PostgreSQL ejecutándose localmente.
+
+**Instalación PostgreSQL:**
+- Windows: https://www.postgresql.org/download/windows/
+- Mac: `brew install postgresql`
+- Linux: `sudo apt-get install postgresql`
 
 La base de datos `alextrix_db` se creará automáticamente al iniciar el servidor.
 
@@ -198,7 +204,7 @@ El sistema analiza automáticamente los valores y genera alertas:
 
 - **FastAPI**: Framework web moderno y rápido
 - **SQLAlchemy**: ORM para gestión de base de datos
-- **PyMySQL**: Driver de MySQL para Python
+- **psycopg2**: Driver de PostgreSQL para Python
 - **Pydantic**: Validación de datos
 - **Uvicorn**: Servidor ASGI de alto rendimiento
 - **WebSocket**: Comunicación bidireccional en tiempo real
@@ -246,10 +252,10 @@ Accede a http://127.0.0.1:8000/docs para ver la documentación Swagger UI intera
 
 ## 📞 Troubleshooting
 
-### Error: "Can't connect to MySQL server"
-- Verifica que MySQL esté ejecutándose
+### Error: "Can't connect to database server"
+- Verifica que PostgreSQL esté ejecutándose
 - Comprueba las credenciales en el archivo `.env`
-- Asegúrate de que el puerto 3306 esté disponible
+- Asegúrate de que el puerto 5432 esté disponible
 
 ### Error: "WebSocket connection failed"
 - Verifica que el servidor esté ejecutándose en el puerto 8000
@@ -273,13 +279,11 @@ Accede a http://127.0.0.1:8000/docs para ver la documentación Swagger UI intera
 
 3. **Variables de entorno:**
    ```
-   DB_USER=tu_usuario_mysql
-   DB_PASS=tu_password_mysql
-   DB_NAME=alextrix_db
-   DB_HOST=tu_host_mysql
+   DATABASE_URL=postgresql://user:password@host:5432/alextrix_db
    ```
+   ⚠️ Render provee automáticamente DATABASE_URL al crear una base de datos PostgreSQL
 
-4. **Nota:** Necesitarás una base de datos MySQL externa (Render MySQL, Railway, o PlanetScale)
+4. **Nota:** Render incluye PostgreSQL gratis - crea la base de datos primero y copia el "Internal Database URL"
 
 ## 📞 Soporte
 
